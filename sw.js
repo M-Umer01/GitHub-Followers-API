@@ -64,9 +64,7 @@ self.addEventListener('fetch', function(e) {
 								return cache.match(e.request);
 						});
 					}
-				}).catch(function(err){
-					
-				});
+				})
 			})
 		);
 	}

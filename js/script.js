@@ -11,19 +11,24 @@ if ('serviceWorker' in navigator) {
 var key="?client_id=cc7650affc2c4eb7d0ba&client_secret=e7522e7df292edb33a1824c1e693c9949cde372f";
 function loadData(mainUrl){
 	fetchAsync(mainUrl).then(function(data) {
-		var mainCard=`<div class="card mainCard">
-				<div class="logo">
-					<a href="${data.html_url}" target="_blank"><img src="${data.avatar_url}" /></a>
+		if(data["message"]!=null && data["message"]=="Not Found"){
+			document.getElementById("Container").innerHTML="<h1>Not Found!</h1>";
+		}
+		else {
+			var mainCard=`<div class="card mainCard">
+					<div class="logo">
+						<a href="${data.html_url}" target="_blank"><img src="${data.avatar_url}" /></a>
+					</div>
+					<div class="data">
+						<p><span class="hedding">Name : </span><span class="big">${data.name}</span></p>
+						<p><span class="hedding">Location : </span><span class="normal">${data.location}</span></p>
+						<p><span class="hedding">Followers : </span><span class="normal">${data.followers}</span></p>
+					</div>
 				</div>
-				<div class="data">
-					<p><span class="hedding">Name : </span><span class="big">${data.name}</span></p>
-					<p><span class="hedding">Location : </span><span class="normal">${data.location}</span></p>
-					<p><span class="hedding">Company : </span><span class="normal">${data.company}</span></p>
-				</div>
-			</div>
-			<h1>Followers</h1>`;
-		document.getElementById("Container").innerHTML=mainCard;
-		return (fetchAsync(data.followers_url+key));
+				<h1>Followers</h1>`;
+			document.getElementById("Container").innerHTML=mainCard;
+			return (fetchAsync(data.followers_url+key));
+		}
 	}).then(function(data1) {
 		data1.forEach(function(item, index){
 			fetchAsync(item.url+key).then(function(data) {
@@ -35,7 +40,10 @@ function loadData(mainUrl){
 						<div class="data">
 							<p><span class="hedding">Name : </span><span class="big">${data.name}</span></p>
 							<p><span class="hedding">Location : </span><span class="normal">${data.location}</span></p>
-							<p><span class="hedding">Company : </span><span class="normal">${data.company}</span></p>
+							<p><span class="hedding">Followers : </span><span class="normal">${data.followers}</span></p>
+						</div>
+						<div class="msgClick">
+							<p>Click to See Followers of this person.</p>
 						</div>
 					</div>`;
 					document.getElementById("Container").innerHTML+=Card;
@@ -48,9 +56,11 @@ function loadData(mainUrl){
 		console.log(reason.message);
 	});
 }
-loadData("https://api.github.com/users/zeeshanhanif"+key);
 
 $(document).ready(function(e) {
+	$("#load").click(function(){
+		loadData("https://api.github.com/users/"+$("#uName").val()+key);
+	});
 	$(document).on("click", ".subCard", function(){
 		loadData($(this).attr("url")+key);
 	});
